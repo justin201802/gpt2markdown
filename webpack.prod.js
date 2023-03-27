@@ -52,7 +52,8 @@ module.exports = {
   mode:"production",
   entry: {
     script: path.resolve(__dirname, 'src/script.js'),
-    background: path.resolve(__dirname, 'src/background.js')
+    background: path.resolve(__dirname, 'src/background.js'),
+    // popup: path.resolve(__dirname, 'src/popup.js'),
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -67,7 +68,8 @@ module.exports = {
         //   return modify(content)
         // },
         to: 'manifest.json' },
-        { from: 'public/images', to: 'images' }
+        { from: 'public/images', to: 'images' },
+        // { from: 'public/popup.html', to: '.' },
       ]
     }),
     new BeforeRunWebpackPlugin({
