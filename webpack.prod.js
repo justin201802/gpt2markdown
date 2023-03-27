@@ -1,6 +1,9 @@
 const path = require('path');
+const fs = require('fs');
+const semver = require('semver');
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const BeforeRunWebpackPlugin = require('@panhezeng/before-run-webpack-plugin');
 let pkg = require('./package.json');
 
 function modify(buffer) {
@@ -38,6 +41,12 @@ const uniqueId  = Math.floor((now.getTime() - today1.getTime()) / 1000);
   return manifest_JSON;
 }
 
+function updateVersion() {
+  const manifestPath = path.join(__dirname, 'src', 'manifest.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+  manifest.version = semver.inc(manifest.version, 'patch');
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+}
 
 module.exports = {
   mode:"production",
@@ -54,13 +63,18 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: 'src/manifest.json', 
-        transform (content, path) {
-          return modify(content)
-        },
+        // transform (content, path) {
+        //   return modify(content)
+        // },
         to: 'manifest.json' },
         { from: 'public/images', to: 'images' }
       ]
     }),
-
+    new BeforeRunWebpackPlugin({
+      cb: function() {
+        console.log("before run");
+        updateVersion();
+      }
+    })
   ]
 };
